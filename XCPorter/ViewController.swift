@@ -44,6 +44,9 @@ class ViewController: NSViewController {
         
         tableView.setDataSource(self)
         tableView.reloadData()
+        
+        let appDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.menuDelegate = self
     }
 }
 
@@ -80,6 +83,7 @@ extension ViewController {
     }
 }
 
+// MARK: - IB Actions
 extension ViewController {
     
     @IBAction func openClicked(sender: NSButton) {
@@ -87,10 +91,76 @@ extension ViewController {
     }
     
     @IBAction func exportClicked(sender: NSButton) {
-        
+        menuActionSaveArchive()
     }
 }
 
+// MARK: - MenuActionsDelegate
+extension ViewController: MenuActionsDelegate {
+    
+    func menuActionArchiveOpen() {
+        chooseFile()
+    }
+    
+    func menuActionSaveArchive() {
+        save("default path")
+    }
+    
+    func menuActionSaveArchiveAs() {
+        saveAs()
+    }
+}
+
+// MARK: - Saving
+extension ViewController {
+    
+    func saveAs() {
+        
+    }
+    
+    func save(path: String) {
+        
+        let command = "sleep 2; echo hello"
+        
+        if terminalCheckbox.state == NSOnState {
+            runCommandInTerminal(command)
+        }
+        else {
+            runCommand(command)
+        }
+    }
+    
+    func runCommandInTerminal(command: String) {
+        
+        let applescript = "tell application \"Terminal\" to do script \"\(command)\""
+        
+        let osascript = NSAppleScript(source: applescript)
+        
+        osascript?.executeAndReturnError(nil)
+    }
+    
+    func runCommand(command: String) {
+        
+        print("start")
+
+        exportButton.enabled = false
+        progress.startAnimation(self)
+        
+        let task = NSTask()
+        task.launchPath = "/bin/bash"
+        task.arguments = ["-c", command]
+        task.launch()
+        
+        task.waitUntilExit()
+        
+        print("end", task.terminationStatus)
+        
+        exportButton.enabled = true
+        progress.stopAnimation(self)
+    }
+}
+
+// MARK: - NSTableViewDataSource
 extension ViewController: NSTableViewDataSource {
     
     func numberOfRowsInTableView(tableView: NSTableView) -> Int {

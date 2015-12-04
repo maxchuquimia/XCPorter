@@ -8,19 +8,47 @@
 
 import Cocoa
 
+protocol MenuActionsDelegate: class {
+    
+    /*!
+    The user wants to open an archive
+    */
+    func menuActionArchiveOpen()
+    
+    /*!
+    The user wants to export an archive to the default location
+    */
+    func menuActionSaveArchive()
+    
+    /*!
+    The user wants to export an archive and select a location
+    */
+    func menuActionSaveArchiveAs()
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-
-
-
+    
+    weak var menuDelegate: MenuActionsDelegate?
+    
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
-        // Insert code here to tear down your application
     }
-
-
 }
 
+extension AppDelegate {
+    
+    @IBAction func openArchive(sender: NSMenuItem) {
+        menuDelegate?.menuActionArchiveOpen()
+    }
+    
+    @IBAction func saveArchive(sender: NSMenuItem) {
+        menuDelegate?.menuActionSaveArchive()
+    }
+    
+    @IBAction func saveArchiveAs(sender: NSMenuItem) {
+        menuDelegate?.menuActionSaveArchiveAs()
+    }
+}

@@ -66,7 +66,7 @@
                                         </menuItem>
                                         <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
                                             <connections>
-                                                <action selector="openDocument:" target="Ady-hI-5gd" id="bVn-NM-KNZ"/>
+                                                <action selector="openArchive:" target="Voe-Tx-rLC" id="aNx-QC-er5"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open Recent" id="tXI-mr-wws">
@@ -90,12 +90,12 @@
                                         </menuItem>
                                         <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="saveDocument:" target="Ady-hI-5gd" id="teZ-XB-qJY"/>
+                                                <action selector="saveArchive:" target="Voe-Tx-rLC" id="Qwm-97-2dG"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">
                                             <connections>
-                                                <action selector="saveDocumentAs:" target="Ady-hI-5gd" id="mDf-zr-I0C"/>
+                                                <action selector="saveArchiveAs:" target="Voe-Tx-rLC" id="vrU-Ot-TJp"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Revert to Saved" id="KaW-ft-85H">

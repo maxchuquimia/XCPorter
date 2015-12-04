@@ -16,7 +16,7 @@ class PlistParser {
             return nil
         }
         
-        guard let stringData = String(data: data, encoding:NSISOLatin1StringEncoding) else {
+        guard let stringData = String(data: data, encoding: NSISOLatin1StringEncoding) else {
             return nil
         }
         
