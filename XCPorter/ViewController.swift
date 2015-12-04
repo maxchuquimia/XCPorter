@@ -18,46 +18,8 @@ class ViewController: NSViewController {
     @IBOutlet private weak var archivePath: NSTextField!
     @IBOutlet private weak var progress: NSProgressIndicator!
     private var allProfiles = [ProvisioningProfile]()
+    private var selectedArchivePath: String?
     
-    struct ProvisioningProfile {
-        let name: String
-        let expiryDate: NSDate
-        let team: String
-        var appID: String?
-        
-        init?(path: String) {
-            
-            guard let data = NSFileManager.defaultManager().contentsAtPath(path) else {
-                return nil
-            }
-            
-            guard let stringData = String(data: data, encoding:NSISOLatin1StringEncoding) else {
-                return nil
-            }
-            
-            let scanner = NSScanner(string: stringData)
-            var scanned: NSString?
-            scanner.scanUpToString("<plist version", intoString: nil)
-            scanner.scanUpToString("</plist>", intoString: &scanned)
-            
-            guard let scannedPlist = scanned else {
-                return nil
-            }
-            
-            let plistString: NSString = "\(scannedPlist)</plist>"
-            
-            guard let plist = plistString.propertyList() as? [String: AnyObject] else {
-                return nil
-            }
-            self.name = plist["Name"] as! String
-            self.expiryDate = plist["ExpirationDate"] as! NSDate
-            self.team = plist["TeamName"] as! String
-            
-            if let entitlements = plist["Entitlements"] as? [String: AnyObject] {
-                self.appID = entitlements["application-identifier"] as? String
-            }
-        }
-    }
     
     var archiveRoot: NSString {
         let path: NSString = "~/Library/Developer/Xcode/Archives/"
@@ -71,7 +33,8 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        exportButton.enabled = false
+        
+        reloadExportButton()
     
         guard let p = createProfiles() else {
             return
@@ -82,26 +45,20 @@ class ViewController: NSViewController {
         tableView.setDataSource(self)
         tableView.reloadData()
     }
-
-
 }
 
 extension ViewController {
 
     func chooseFile() {
         
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = false
-        panel.canChooseFiles = true
-        panel.allowedFileTypes = ["xcarchive"]
-        panel.allowsMultipleSelection = false
-        panel.directoryURL = NSURL(string: "file:\(archiveRoot)")
-        
-        if panel.runModal() == NSModalResponseOK {
-            archivePath.stringValue = panel.URLs.first?.lastPathComponent ?? ""
-            
-            exportButton.enabled = true
+        guard let url = NSOpenPanel.archiveURL(archiveRoot as String) else {
+            return
         }
+        
+        selectedArchivePath = url.absoluteString
+        archivePath.stringValue = url.lastPathComponent!
+
+        reloadExportButton()
     }
     
     func createProfiles() -> [ProvisioningProfile]? {
@@ -116,6 +73,10 @@ extension ViewController {
             let fullPath = profilesPath.stringByAppendingPathComponent(path)
             return ProvisioningProfile(path: fullPath)
         }
+    }
+    
+    func reloadExportButton() {
+        exportButton.enabled = (selectedArchivePath != nil)
     }
 }
 
@@ -152,7 +113,6 @@ extension ViewController: NSTableViewDataSource {
         else if tableColumn?.title == "Bundle" {
             return profile.appID
         }
-        
         
         return nil
     }
