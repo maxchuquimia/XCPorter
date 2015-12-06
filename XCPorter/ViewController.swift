@@ -103,7 +103,7 @@ extension ViewController: MenuActionsDelegate {
     }
     
     func menuActionSaveArchive() {
-        save("default path")
+        save(pathWithoutExtension: ("~/Desktop" as NSString).stringByExpandingTildeInPath)
     }
     
     func menuActionSaveArchiveAs() {
@@ -114,13 +114,53 @@ extension ViewController: MenuActionsDelegate {
 // MARK: - Saving
 extension ViewController {
     
-    func saveAs() {
+    func pathWithoutExtensionByAddingFilename(directory: String) -> String {
         
+        let nspath = directory as NSString
+        return nspath.stringByAppendingPathComponent(archivePath.stringValue).stringByReplacingOccurrencesOfString("xcarchive", withString: "")
     }
     
-    func save(path: String) {
+    func saveAs() {
         
-        let command = "sleep 2; echo hello"
+        guard let dir = NSOpenPanel.anyDirectory() else {
+            return
+        }
+        
+        let path = pathWithoutExtensionByAddingFilename(dir.absoluteString)
+        save(pathWithoutExtension: path)
+    }
+    
+    func save(pathWithoutExtension path: NSString) {
+        
+        let ipaPath = path.stringByAppendingPathExtension(".ipa")
+        
+        if NSFileManager.defaultManager().fileExistsAtPath(ipaPath!) {
+            
+            if !NSAlert.questionAlert("An IPA with the same name exists at the chosen path", message: "Would you like to continue and overwrite it?") {
+                return
+            }
+            
+            try! NSFileManager.defaultManager().removeItemAtPath(ipaPath!)
+        }
+        
+        var command = "sleep 2; echo hello"
+        
+        if dSYMCheckbox.state == NSOnState {
+        
+            let dsymPath = path.stringByAppendingPathExtension(".dSYM.zip")
+            
+            if NSFileManager.defaultManager().fileExistsAtPath(dsymPath!) {
+                
+                if !NSAlert.questionAlert("A compressed dSYM with the same name exists at the chosen path", message: "Would you like to continue and overwrite it?") {
+                    return
+                }
+                
+                try! NSFileManager.defaultManager().removeItemAtPath(dsymPath!)
+            }
+            
+            let dSYMCommand = "; echo dsym"
+            command.appendContentsOf(dSYMCommand)
+        }
         
         if terminalCheckbox.state == NSOnState {
             runCommandInTerminal(command)

@@ -14,6 +14,7 @@
 		503D36981C124BD90092A066 /* PlistParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503D36971C124BD90092A066 /* PlistParser.swift */; };
 		503D369A1C124CFF0092A066 /* ProvisioningProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503D36991C124CFF0092A066 /* ProvisioningProfile.swift */; };
 		503D369C1C124D3A0092A066 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503D369B1C124D3A0092A066 /* Panels.swift */; };
+		503D369E1C12BB320092A066 /* PersistantCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503D369D1C12BB320092A066 /* PersistantCheckbox.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		503D36971C124BD90092A066 /* PlistParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlistParser.swift; sourceTree = "<group>"; };
 		503D36991C124CFF0092A066 /* ProvisioningProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningProfile.swift; sourceTree = "<group>"; };
 		503D369B1C124D3A0092A066 /* Panels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Panels.swift; sourceTree = "<group>"; };
+		503D369D1C12BB320092A066 /* PersistantCheckbox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistantCheckbox.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				503D36971C124BD90092A066 /* PlistParser.swift */,
 				503D36991C124CFF0092A066 /* ProvisioningProfile.swift */,
 				503D369B1C124D3A0092A066 /* Panels.swift */,
+				503D369D1C12BB320092A066 /* PersistantCheckbox.swift */,
 				5009AAB71C103B690044B9D0 /* Assets.xcassets */,
 				5009AAB91C103B690044B9D0 /* Main.storyboard */,
 				5009AABC1C103B690044B9D0 /* Info.plist */,
@@ -141,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				503D369C1C124D3A0092A066 /* Panels.swift in Sources */,
+				503D369E1C12BB320092A066 /* PersistantCheckbox.swift in Sources */,
 				503D369A1C124CFF0092A066 /* ProvisioningProfile.swift in Sources */,
 				5009AAB61C103B690044B9D0 /* ViewController.swift in Sources */,
 				5009AAB41C103B690044B9D0 /* AppDelegate.swift in Sources */,
