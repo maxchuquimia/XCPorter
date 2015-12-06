@@ -29,7 +29,18 @@ protocol MenuActionsDelegate: class {
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     
+    @IBOutlet private weak var saveAsButton: NSMenuItem!
+    @IBOutlet private weak var saveButton: NSMenuItem!
     weak var menuDelegate: MenuActionsDelegate?
+    
+    var enableSaving = true {
+        didSet {
+            
+            //This doesn't work. Oh well.
+            saveButton.enabled = enableSaving
+            saveAsButton.enabled = enableSaving
+        }
+    }
     
     func applicationDidFinishLaunching(aNotification: NSNotification) {
     }

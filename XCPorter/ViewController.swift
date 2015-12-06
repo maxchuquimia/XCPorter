@@ -19,6 +19,14 @@ class ViewController: NSViewController {
     @IBOutlet private weak var progress: NSProgressIndicator!
     private var allProfiles = [ProvisioningProfile]()
     private var selectedArchivePath: String?
+    private var selectedProfileName: String? {
+        
+        guard self.tableView.selectedRow > -1 else {
+            return nil
+        }
+        
+        return allProfiles[self.tableView.selectedRow].name
+    }
     
     
     var archiveRoot: NSString {
@@ -79,7 +87,11 @@ extension ViewController {
     }
     
     func reloadExportButton() {
-        exportButton.enabled = (selectedArchivePath != nil)
+        
+        let appDelegate = NSApplication.sharedApplication().delegate as! AppDelegate
+        
+        exportButton.enabled = (selectedArchivePath != nil) && (selectedProfileName != nil)
+        appDelegate.enableSaving = exportButton.enabled
     }
 }
 
@@ -103,10 +115,22 @@ extension ViewController: MenuActionsDelegate {
     }
     
     func menuActionSaveArchive() {
-        save(pathWithoutExtension: ("~/Desktop" as NSString).stringByExpandingTildeInPath)
+        
+        if !exportButton.enabled {
+            return; //hack
+        }
+        
+        // say `as NSString` one more time...
+        let savePath = (("~/Desktop" as NSString).stringByExpandingTildeInPath as NSString).stringByAppendingPathComponent((selectedArchivePath! as NSString).lastPathComponent)
+        save(pathWithoutExtension: savePath)
     }
     
     func menuActionSaveArchiveAs() {
+        
+        if !exportButton.enabled {
+            return; //same hack
+        }
+        
         saveAs()
     }
 }
@@ -130,37 +154,34 @@ extension ViewController {
         save(pathWithoutExtension: path)
     }
     
+    //Sample command: xcodebuild -exportArchive -archivePath "path to archive"  -exportFormat ipa -exportProvisioningProfile "Profile Name" -exportPath "output path"
     func save(pathWithoutExtension path: NSString) {
         
-        let ipaPath = path.stringByAppendingPathExtension(".ipa")
+        let ipaPath = path.stringByAppendingPathExtension("ipa")!
+        let testPath = (ipaPath as NSString).stringByRemovingPercentEncoding!
         
-        if NSFileManager.defaultManager().fileExistsAtPath(ipaPath!) {
+        if NSFileManager.defaultManager().fileExistsAtPath(testPath) {
             
             if !NSAlert.questionAlert("An IPA with the same name exists at the chosen path", message: "Would you like to continue and overwrite it?") {
                 return
             }
             
-            try! NSFileManager.defaultManager().removeItemAtPath(ipaPath!)
+            try! NSFileManager.defaultManager().removeItemAtPath(testPath)
         }
         
-        var command = "sleep 2; echo hello"
+        var command = "xcodebuild -exportArchive -archivePath \"\(selectedArchivePath!)\" -exportFormat ipa -exportProvisioningProfile \"\(selectedProfileName!)\" -exportPath \"\(ipaPath)\""
         
         if dSYMCheckbox.state == NSOnState {
         
-            let dsymPath = path.stringByAppendingPathExtension(".dSYM.zip")
-            
-            if NSFileManager.defaultManager().fileExistsAtPath(dsymPath!) {
-                
-                if !NSAlert.questionAlert("A compressed dSYM with the same name exists at the chosen path", message: "Would you like to continue and overwrite it?") {
-                    return
-                }
-                
-                try! NSFileManager.defaultManager().removeItemAtPath(dsymPath!)
+            if let dSYMCommand = dSYMsExportCommand(path as String) {
+                command.appendContentsOf(dSYMCommand)
             }
-            
-            let dSYMCommand = "; echo dsym"
-            command.appendContentsOf(dSYMCommand)
         }
+        
+        command.appendContentsOf("; open -R \"\(ipaPath)\"")
+        command = command.stringByReplacingOccurrencesOfString("file://", withString: "").stringByReplacingOccurrencesOfString("file:", withString: "").stringByRemovingPercentEncoding! //'cos why not
+        
+        print(command)
         
         if terminalCheckbox.state == NSOnState {
             runCommandInTerminal(command)
@@ -170,9 +191,29 @@ extension ViewController {
         }
     }
     
-    func runCommandInTerminal(command: String) {
+    func dSYMsExportCommand(exportDirectory: String) -> String? {
         
-        let applescript = "tell application \"Terminal\" to do script \"\(command)\""
+        var dSYMDir: NSString = (selectedArchivePath! as NSString).stringByAppendingPathComponent("dSYMs")
+        
+        //why is this different?
+        dSYMDir = dSYMDir.stringByReplacingOccurrencesOfString("file:", withString: "").stringByRemovingPercentEncoding!
+        
+        return try? NSFileManager.defaultManager().contentsOfDirectoryAtPath(dSYMDir as String).filter({ (path) -> Bool in
+            return path.hasSuffix(".dSYM")
+        }).reduce("; cd \"\(dSYMDir)\"", combine: { (full, new) -> String in
+            
+            let thisOutpath = "\(exportDirectory)-\(new).zip"
+            return "\(full); zip -FSr \"\(thisOutpath)\" \"\(new)\""
+        })
+    }
+    
+    func runCommandInTerminal(var command: String) {
+        
+         NSAppleScript(source: "tell application \"Terminal\" to active")?.executeAndReturnError(nil)
+        
+        command = command.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+        
+        let applescript = "tell application \"Terminal\" to do script \"\(command)\"" // single quotes, Larry
         
         let osascript = NSAppleScript(source: applescript)
         

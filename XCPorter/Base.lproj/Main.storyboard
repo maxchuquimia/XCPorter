@@ -642,7 +642,12 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="XCPorter" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="XCPorter" customModuleProvider="target">
+                    <connections>
+                        <outlet property="saveAsButton" destination="Bw7-FT-i3A" id="Cbc-IB-xDi"/>
+                        <outlet property="saveButton" destination="pxx-59-PXV" id="Vx6-zF-S1C"/>
+                    </connections>
+                </customObject>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="0.0"/>
