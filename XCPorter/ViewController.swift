@@ -83,7 +83,9 @@ extension ViewController {
             
             let fullPath = profilesPath.stringByAppendingPathComponent(path)
             return ProvisioningProfile(path: fullPath)
-        }
+        }.sort({ (a, b) -> Bool in
+            return a.name < b.name
+        })
     }
     
     func reloadExportButton() {

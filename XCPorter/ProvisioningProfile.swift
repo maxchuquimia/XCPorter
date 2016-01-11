@@ -22,7 +22,7 @@ struct ProvisioningProfile {
         
         self.name = plist["Name"] as! String
         self.expiryDate = plist["ExpirationDate"] as! NSDate
-        self.team = plist["TeamName"] as! String
+        self.team = (plist["TeamName"] as? String) ?? ""
         
         if let entitlements = plist["Entitlements"] as? [String: AnyObject] {
             self.appID = entitlements["application-identifier"] as? String
