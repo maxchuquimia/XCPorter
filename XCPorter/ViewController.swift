@@ -200,13 +200,16 @@ extension ViewController {
         //why is this different?
         dSYMDir = dSYMDir.stringByReplacingOccurrencesOfString("file:", withString: "").stringByRemovingPercentEncoding!
         
-        return try? NSFileManager.defaultManager().contentsOfDirectoryAtPath(dSYMDir as String).filter({ (path) -> Bool in
-            return path.hasSuffix(".dSYM")
-        }).reduce("; cd \"\(dSYMDir)\"", combine: { (full, new) -> String in
+        //Fancy
+        guard let dsymPaths = try? NSFileManager.defaultManager().contentsOfDirectoryAtPath(dSYMDir as String).filter({$0.hasSuffix(".dSYM") }) else { return nil }
+        
+        let step1 = dsymPaths.reduce("; cd \"\(dSYMDir)\"", combine: { (full, new) -> String in
             
             let thisOutpath = "\(exportDirectory)-\(new).zip"
             return "\(full); zip -FSr \"\(thisOutpath)\" \"\(new)\""
         })
+        
+        return step1 + "; zip -FSr \"\(exportDirectory)-all_symbols.DSYM.zip\" *.dSYM"
     }
     
     func runCommandInTerminal(command: String) {
