@@ -21,7 +21,7 @@ class PersistantCheckbox: NSButton {
     
         state = value ? NSOnState : NSOffState
     
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "persistValue", name: NSApplicationWillTerminateNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(PersistantCheckbox.persistValue), name: NSApplicationWillTerminateNotification, object: nil)
     }
     
     func persistValue() {

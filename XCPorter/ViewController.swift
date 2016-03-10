@@ -209,9 +209,11 @@ extension ViewController {
         })
     }
     
-    func runCommandInTerminal(var command: String) {
+    func runCommandInTerminal(command: String) {
         
-         NSAppleScript(source: "tell application \"Terminal\" to active")?.executeAndReturnError(nil)
+        var command = command
+        
+        NSAppleScript(source: "tell application \"Terminal\" to active")?.executeAndReturnError(nil)
         
         command = command.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
         
